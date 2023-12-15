@@ -87,6 +87,9 @@ x264_2pass.log
 x264_2pass.log.mbtree
 *.264
 
+#dash
+*.mpd
 
 #for size problems
 *.m4s
+bbb_sunflower_1080p_30fps_normal_*.mp4
