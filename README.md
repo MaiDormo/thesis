@@ -33,3 +33,37 @@ The `streaming_stats/` directory contains JSON files with statistics related to 
 The video used for testing can be downloaded at this link: [bbb_sunflower_1080p_30fps_normal.mp4.zip](https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip)
 
 Please refer to individual scripts for more detailed information on their operation and usage.
+
+
+# Steps to Reproduce
+
+## Installation 
+
+This project requires several programs to be installed:
+
+- Mininet: Follow the [Native installation](https://mininet.org/download/) instructions.
+- Opendaylight v0.8.4: Follow the instructions provided [here](https://john.soban.ski/install-opendaylight-ubuntu-lts-22-04.html).
+- VLC: Install using the command `sudo apt install vlc`.
+- x264 and MP4Box (contained in gpac): Install using the command `sudo apt install vlc && sudo apt install gpac`.
+- Node.js and npm: Install using the command `sudo apt install nodejs`.
+- Python libraries: (To be added)
+
+## Starting up the Experiment
+
+Before running the project, ensure the Opendaylight controller is open and started. (To be added: instructions for installing necessary components to make dlux work)
+
+Start the experiment by running the following command: `sudo -E python3 net_conf/thesis_traffic.py`. You will be prompted to select the bottleneck link bandwidth from the three choices: `3`,`5`,`10`. After the SDN network configuration is active, run `> pingall` to form the network table.
+
+Next, open terminals on the generated nodes using `> xterm h1 h2 h2 h3 h4`. 
+
+- In the h1 terminal, start the video server with `node server/server.js`.
+- In the first h2 terminal, open Wireshark with `sudo -E wireshark &` and set it to monitor `h2-eth0`.
+- In the second h2 terminal, open the VLC player with `vlc-wrapper http://10.0.0.1:1337/bbb_sunflower_1080p_30fps_normal.mpd`. If you're using a different video, replace the name of the mpd file.
+- In the h4 terminal, start the server that will receive the traffic sent by the client (h3) with `iperf -s -u -i 1`.
+- Finally, in the h3 terminal, generate traffic with `iperf -c 10.0.0.4 -u -b [value] -t 100`. The value should be less than the bandwidth value selected for meaningful results.
+
+After the traffic has stopped, close the video and server (both by SIGINT). In Wireshark, stop the packet tracking, filter by HTTP, and export the packets in CSV format. Also, export all TCP conversations made during the period in CSV format.
+
+By correctly editing the Python files, you can open all of the generated data.
+
+To try with a different bottleneck link, type `exit` in the Mininet CLI. After exiting, type `sudo mn -c` to clean all generated Mininet processes, and repeat the experiment.
