@@ -7,9 +7,16 @@ console.log('Current Working Directory:', currentWorkingDirectory);
 
 let serverStartTime = null;
 let firstRequestTime = null;
+let statsFile = null;
 
+// Create server and start listening
 const server = http.createServer(handleRequest);
-server.listen(1337, '10.0.0.1', () => {
+server.listen(1337, '10.0.0.1', startServer);
+
+// Handle server shutdown
+process.on('SIGINT', stopServer);
+
+function startServer() {
     console.log("Running node.js %s on %s-%s", process.version, process.platform, process.arch);
     console.log('Server running at http://10.0.0.1:1337/');
     if (!fs.existsSync('./streaming_stats')) {
@@ -17,18 +24,19 @@ server.listen(1337, '10.0.0.1', () => {
     }
     statsFile = './streaming_stats/stats_' + myCurrentDate() + '.json';
     serverStartTime = Date.now(); // Start the clock
-});
+}
 
-process.on('SIGINT', function() {
+function stopServer() {
     console.log('User typed: Ctrl + C or Ctrl + Χ. Closing server gracefully...\n');
     server.close(() => {
         const serverEndTime = Date.now(); // Stop the clock
         const serverRunTime = (serverEndTime - serverStartTime) / 1000; // Calculate the run time in seconds
         console.log('Server ran for ' + serverRunTime + ' seconds.');
         console.log('Server stopped.\n');
+        cleanup();
         process.exit(0);
     });
-});
+}
 
 function handleRequest(request, response) {
 
@@ -36,7 +44,6 @@ function handleRequest(request, response) {
         firstRequestTime = Date.now();
     }
     const filePath = './server/videos' + request.url;
-    const datetimeRequestStart = myCurrentDate();
     console.log('filepath: ' + filePath + '\n');
 
     let resolution = null
@@ -139,15 +146,6 @@ function cleanup() {
     });
     console.log('All file streams closed.');
 }
-
-process.on('SIGINT', function() {
-    console.log('User typed: Ctrl + C or Ctrl + Χ. Closing server gracefully...\n');
-    server.close(() => {
-        console.log('Server stopped.\n');
-        cleanup();
-        process.exit(0);
-    });
-});
 
 function removeFileStream(fileStream) {
     const index = openFileStreams.indexOf(fileStream);

@@ -1,3 +1,5 @@
+// Note: This server is not used in the experiment. It is used only for reference.
+
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
