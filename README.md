@@ -50,7 +50,7 @@ This project requires several programs to be installed:
 
 ## Starting up the Experiment
 
-Before running the project, ensure the Opendaylight controller is open and started. (To be added: instructions for installing necessary components to make dlux work)
+Before running the project, ensure that the Opendaylight controller is up and running. (Instructions for installing the necessary components to make dlux work will be added soon). Additionally, make sure you have executed the `bash.sh` script. This script generates multi-resolution video and prepares it for MPEG-DASH streaming from the `h1` server.
 
 Start the experiment by running the following command: `sudo -E python3 net_conf/thesis_traffic.py`. You will be prompted to select the bottleneck link bandwidth from the three choices: `3`,`5`,`10`. After the SDN network configuration is active, run `> pingall` to form the network table.
 
