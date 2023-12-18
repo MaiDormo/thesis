@@ -64,6 +64,6 @@ Next, open terminals on the generated nodes using `> xterm h1 h2 h2 h3 h4`.
 
 After the traffic has stopped, close the video and server (both by SIGINT). In Wireshark, stop the packet tracking, filter by HTTP, and export the packets in CSV format. Also, export all TCP conversations made during the period in CSV format.
 
-By correctly editing the Python files, you can open all of the generated data.
+By correctly editing the Python files, you can open all of the generated data. Although right now it still requires to copy the contents of the generated file in anoter file because of permission when generating the file.
 
 To try with a different bottleneck link, type `exit` in the Mininet CLI. After exiting, type `sudo mn -c` to clean all generated Mininet processes, and repeat the experiment.
