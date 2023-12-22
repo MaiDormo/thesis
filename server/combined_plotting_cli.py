@@ -75,6 +75,8 @@ def plot_graphs(df, times, resolutions, bandwidth):
         ax.xaxis.label.set_size(15)
         ax.yaxis.label.set_size(15)
 
+    fig.savefig(f"server/plotting_result/combined_plot_{args.Bandwidth}MB.pdf")
+
     return fig, axs
 
 if __name__ == "__main__":
@@ -82,4 +84,5 @@ if __name__ == "__main__":
     df = read_and_filter_data(args.Bandwidth)
     times, resolutions = read_json_file(args.Bandwidth)
     plot_graphs(df, times, resolutions, args.Bandwidth)
+    
     plt.show()
