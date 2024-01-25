@@ -17,4 +17,4 @@ ffmpeg -ss 00:00:00 -i bbb_sunflower_2160p_30fps_normal_original.mp4 -t 00:05:00
 
 # Remove the original video and the zip file
 rm bbb_sunflower_2160p_30fps_normal_original.mp4
-rm file.zip
+rm bbb_sunflower_2160p_30fps_normal.mp4.zip
