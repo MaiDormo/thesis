@@ -1,5 +1,5 @@
 // client.js
-const URL = 'http://10.203.0.207:1337/bbb_sunflower_1080p_30fps_normal.mpd';
+const URL = 'http://10.203.0.207:1337/bbb_sunflower_2160p_30fps_normal.mpd';
 const RESOLUTIONS = ['320x180', '480x270', '640x360', '768x432', '940x540', '1024x576', '1280x720', '1920x1080', '2560x1440', '3840x2160'];
 const BITS_IN_MEGABIT = 1000000;
 
