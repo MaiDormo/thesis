@@ -1,18 +1,19 @@
 #Note: This script is not currently being used in the project.
+#TODO: add this script to the project with the correct changes, in order to utilize the data from csv file
 
 from datetime import datetime
 import matplotlib.pyplot as plt
 import json
 
 # Open the JSON file
-with open('server/stats_example.json', 'r') as f:
+with open('streaming_stats/stats_20240124_14:31:30.json', 'r') as f:
     lines = f.readlines()
 
 # Parse the JSON objects in the file
 stats = [json.loads(line) for line in lines]
 
 # Define the order of the resolutions
-resolution_order = ['320x180', '480x270', '640x360',  '768x432', '960x540', '1024x576', '1280x720', '1920x1080']
+resolution_order = ['320x180', '480x270', '640x360',  '768x432', '960x540', '1024x576', '1280x720', '1920x1080', '2560x1440', '3840x2160']
 
 # Extract the times and resolutions, skipping entries with 'no_resolution'
 times_resolutions = [(datetime.strptime(stat['time'], '%M:%S'), stat['resolution']) for stat in stats if stat['resolution'] != 'no_resolution']

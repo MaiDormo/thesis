@@ -57,13 +57,39 @@ do
         # ffmpeg -y -i "${fe}" -an -c:v libx264 -x264opts 'keyint=24:min-keyint=24:no-scenecut' -b:v 400k -maxrate 400k -bufsize 800k -vf "scale=-1:360" "${f}_360.mp4"
         
         
-        # ffmpeg -y -i "${fe}" -vn -c:a aac -b:a 128k "${f}_audio.m4a"
-        # ffmpeg -y -i "${fe}" -an -c:v libx264 -x264opts 'keyint=30:min-keyint=30:no-scenecut' -b:v 1500k -maxrate 1500k -bufsize 3000k -vf "scale=-1:720" -r 30 "${f}_720.mp4"
-        # ffmpeg -y -i "${fe}" -an -c:v libx264 -x264opts 'keyint=30:min-keyint=30:no-scenecut' -b:v 800k -maxrate 800k -bufsize 1600k -vf "scale=-1:540" -r 30 "${f}_540.mp4"
-        # ffmpeg -y -i "${fe}" -an -c:v libx264 -x264opts 'keyint=30:min-keyint=30:no-scenecut' -b:v 400k -maxrate 400k -bufsize 800k -vf "scale=-1:360" -r 30 "${f}_360.mp4"
+    #    # Convert to 1080p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 6800k -maxrate:v 13600k -bufsize:v 27200k -vf "scale=1920:1080" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_1080.mp4"
+
+    #    # Convert to 720p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 5000k -maxrate:v 10000k -bufsize:v 20000k -vf "scale=1280:720" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_720.mp4"
+
+    #    # Convert to 576p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 3500k -maxrate:v 7000k -bufsize:v 14000k -vf "scale=1024:576" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_576.mp4"
+
+    #    # Convert to 540p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 3000k -maxrate:v 6000k -bufsize:v 12000k -vf "scale=960:540" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_540.mp4"
+
+    #    # Convert to 432p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 2000k -maxrate:v 4000k -bufsize:v 8000k -vf "scale=768:432" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_432.mp4"
+
+    #    # Convert to 360p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 1500k -maxrate:v 3000k -bufsize:v 6000k -vf "scale=640:360" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_360.mp4"
+
+    #    # Convert to 270p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 800k -maxrate:v 1600k -bufsize:v 3200k -vf "scale=480:270" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_270.mp4"
+
+    #    # Convert to 180p video
+    #    ffmpeg -i "${fe}" -c:v h264_nvenc -preset p7 -rc vbr -b:v 500k -maxrate:v 1000k -bufsize:v 2000k -vf "scale=320:180" -g 120 -keyint_min 120 -profile:v main -level 4.1 -pix_fmt yuv420p "${f}_180.mp4"
+
 
         	
         # x264 --output "${f}_720.264" --fps 24 --preset slow --bitrate 2400 --vbv-maxrate 4800 --vbv-bufsize 9600 --min-keyint 48 --keyint 48 --scenecut 0 --no-scenecut --pass 1 --video-filter "resize:width=1280,height=720" "${fe}"
+        # create a 2160p video
+        x264 --output "${f}_2160.264" --fps 30 --preset slow --bitrate 12000 --vbv-maxrate 24000 --vbv-bufsize 48000 --keyint 120 --min-keyint 120 --no-scenecut --pass 1 --video-filter "resize:width=3840,height=2160" "${fe}"
+
+        #create a 1440p video
+        x264 --output "${f}_1440.264" --fps 30 --preset slow --bitrate 8000 --vbv-maxrate 16000 --vbv-bufsize 32000 --keyint 120 --min-keyint 120 --no-scenecut --pass 1 --video-filter "resize:width=2560,height=1440" "${fe}"
+
         # Create a 1080p video
         x264 --output "${f}_1080.264" --fps 30 --preset slow --bitrate 6800 --vbv-maxrate 13600 --vbv-bufsize 27200 --keyint 120 --min-keyint 120 --no-scenecut --pass 1 --video-filter "resize:width=1920,height=1080" "${fe}"
 
@@ -88,14 +114,14 @@ do
         # Create a 180p video
         x264 --output "${f}_180.264" --fps 30 --preset slow --bitrate 500 --vbv-maxrate 1000 --vbv-bufsize 2000 --keyint 120 --min-keyint 120 --no-scenecut --pass 1 --video-filter "resize:width=320,height=180" "${fe}"
 
-        # Add the videos to MP4Box
-        for res in 1080 720 576 540 432 360 270 180; do
+        Add the videos to MP4Box
+        for res in 2160 1440 1080 720 576 540 432 360 270 180; do
             MP4Box -add "${f}_${res}.264" -fps 30 "${f}_${res}.mp4"
         done
 
-
-        echo "Finished converting \"$f\""
-        rm -f ffmpeg*log*
+        # MP4Box -dash 4000 -frag 4000 -rap -profile "dashavc264:live" -segment-duration 4000 -out "${f}.mpd" "${f}_1080.mp4" "${f}_720.mp4" "${f}_576.mp4" "${f}_540.mp4" "${f}_432.mp4" "${f}_360.mp4" "${f}_270.mp4" "${f}_180.mp4"
+        # echo "Finished converting \"$f\""
+        # rm -f ffmpeg*log*
 
         # Then, the Media Presentation Description (MPD) file is generated.
         # The MPD file stores all the data for the current project in a database format.
@@ -112,7 +138,7 @@ do
             
             # MP4Box -dash 4000 -frag 4000 -rap -segment-name segment_ -out bigbuck.mpd bigbuck_out_720.mp4 bigbuck_out_540.mp4 bigbuck_out_360.mp4 
             # MP4Box -dash 4000 -frag 4000 -rap -profile "dashavc264:live" -out bigbuck.mpd bigbuck_720.mp4 bigbuck_540.mp4 bigbuck_360.mp4
-            MP4Box -dash 4000 -frag 4000 -rap -profile "dashavc264:live" -out "${f}.mpd" "${f}_1080.mp4" "${f}_720.mp4" "${f}_576.mp4" "${f}_540.mp4" "${f}_432.mp4" "${f}_360.mp4" "${f}_270.mp4" "${f}_180.mp4"
+            MP4Box -dash 4000 -frag 4000 -rap -profile "dashavc264:live" -out "${f}.mpd" "${f}_2160.mp4" "${f}_1440.mp4" "${f}_1080.mp4" "${f}_720.mp4" "${f}_576.mp4" "${f}_540.mp4" "${f}_432.mp4" "${f}_360.mp4" "${f}_270.mp4" "${f}_180.mp4"
 
             # MP4Box -dash-strict 2000 -rap -frag-rap -bs-switching no -profile "dashavc264:live" -out "bigbuck.mpd" "bigbuck_720.mp4" "bigbuck_540.mp4" "bigbuck_360.mp4" "bigbuck_audio.m4a"
             

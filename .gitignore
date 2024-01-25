@@ -79,8 +79,8 @@ yarn-debug.log*
 yarn-error.log*
 
 #for testing
-server/streaming_stats
-server/wireshark
+streaming_stats/
+wireshark/
 
 #x246
 x264_2pass.log
@@ -93,3 +93,4 @@ x264_2pass.log.mbtree
 #for size problems
 *.m4s
 *.mp4
+

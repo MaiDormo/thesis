@@ -11,21 +11,21 @@ let statsFile = null;
 
 // Create server and start listening
 const server = http.createServer(handleRequest);
-server.listen(1337, '10.0.0.1', startServer);
+server.listen(1337, '10.203.0.207', startServer);
 
 // Handle server shutdown
 process.on('SIGINT', stopServer);
 
 function startServer() {
     console.log("Running node.js %s on %s-%s", process.version, process.platform, process.arch);
-    console.log('Server running at http://10.0.0.1:1337/');
+    console.log('Server running at http://10.203.0.207:1337/');
     if (!fs.existsSync('./streaming_stats')) {
         fs.mkdirSync('./streaming_stats');
     }
     statsFile = './streaming_stats/stats_' + myCurrentDate() + '.json';
     serverStartTime = Date.now(); // Start the clock
 }
-
+ 
 function stopServer() {
     console.log('User typed: Ctrl + C or Ctrl + Χ. Closing server gracefully...\n');
     server.close(() => {
@@ -40,6 +40,21 @@ function stopServer() {
 
 function handleRequest(request, response) {
 
+    // Ignore favicon.ico requests
+    if (request.url === '/favicon.ico') {
+        response.writeHead(204, {'Content-Type': 'image/x-icon'});
+        response.end();
+        return;
+    }
+
+    // If the root of the server is accessed, serve the index.html file
+    if (request.url === '/') {
+        const filePath = path.join(currentWorkingDirectory, 'server', 'index.html');
+        const contentType = 'text/html';
+        serveFile(response, filePath, contentType);
+        return;
+    }
+
     if (firstRequestTime === null) {
         firstRequestTime = Date.now();
     }
@@ -49,9 +64,9 @@ function handleRequest(request, response) {
     let resolution = null
     if (filePath.includes(".mpd")) {
         console.log('(manifest) : request starting... : ' + filePath + '\n');
-    // } else if (filePath.includes("lake_audio")) {
-    //     console.log('(audio) : request starting... : ' + filePath + '\n');
-    } else if (filePath.includes("bbb_sunflower_1080p_30fps_normal_")) {
+    } else if (filePath.includes("bbb_sunflower_2160p_30fps_normal_audio")) {
+        console.log('(audio) : request starting... : ' + filePath + '\n');
+    } else if (filePath.includes("bbb_sunflower_2160p_30fps_normal_")) {
         console.log('(segment) : request starting... : ' + filePath + '\n');
         resolution = filePath.split('_')[5];
     }
@@ -61,23 +76,23 @@ function handleRequest(request, response) {
 
     serveFile(response, filePath, contentType, resolution);
 
-    const stats = {
-        time: getElapsedTimeSinceFirstRequest(),
-        filePath: filePath,
-        resolution: fullResolution(resolution),
-    };
-    fs.appendFile(statsFile, JSON.stringify(stats) + '\n', err => {
-        if (err) {
-            console.error('Error writing file:', err);
-        } else {
-            // Change the file permissions to 0666 (read and write access for all users)
-            fs.chmod(statsFile, 0o666, err => {
-                if (err) {
-                    console.error('Error changing file permissions:', err);
-                }
-            });
-        }
-    });
+    // const stats = {
+    //     time: getElapsedTimeSinceFirstRequest(),
+    //     filePath: filePath,
+    //     resolution: fullResolution(resolution),
+    // };
+    // fs.appendFile(statsFile, JSON.stringify(stats) + '\n', err => {
+    //     if (err) {
+    //         console.error('Error writing file:', err);
+    //     } else {
+    //         // Change the file permissions to 0666 (read and write access for all users)
+    //         fs.chmod(statsFile, 0o666, err => {
+    //             if (err) {
+    //                 console.error('Error changing file permissions:', err);
+    //             }
+    //         });
+    //     }
+    // });
 }
 
 
@@ -183,6 +198,10 @@ function fullResolution(resolution) {
             return '1280x720';
         case '1080':
             return '1920x1080';
+        case '1440':
+            return '2560x1440';
+        case '2160':
+            return '3840x2160';
         default:
             return 'no_resolution';
     }
