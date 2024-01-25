@@ -141,7 +141,7 @@ do
             
             # MP4Box -dash 4000 -frag 4000 -rap -segment-name segment_ -out bigbuck.mpd bigbuck_out_720.mp4 bigbuck_out_540.mp4 bigbuck_out_360.mp4 
             # MP4Box -dash 4000 -frag 4000 -rap -profile "dashavc264:live" -out bigbuck.mpd bigbuck_720.mp4 bigbuck_540.mp4 bigbuck_360.mp4
-            MP4Box -dash 4000 -frag 4000 -rap -profile "dashavc264:live" -out "${f}.mpd" "${f}_2160.mp4" "${f}_1440.mp4" "${f}_1080.mp4" "${f}_720.mp4" "${f}_576.mp4" "${f}_540.mp4" "${f}_432.mp4" "${f}_360.mp4" "${f}_270.mp4" "${f}_180.mp4" "${f}_audio.mp4"
+            MP4Box -dash 4000 -frag 4000 -rap -profile "dashavc264:live" -out "${f}.mpd" "${f}_2160.mp4" "${f}_1440.mp4" "${f}_1080.mp4" "${f}_720.mp4" "${f}_576.mp4" "${f}_540.mp4" "${f}_432.mp4" "${f}_360.mp4" "${f}_270.mp4" "${f}_180.mp4"
 
             # MP4Box -dash-strict 2000 -rap -frag-rap -bs-switching no -profile "dashavc264:live" -out "bigbuck.mpd" "bigbuck_720.mp4" "bigbuck_540.mp4" "bigbuck_360.mp4" "bigbuck_audio.m4a"
             
