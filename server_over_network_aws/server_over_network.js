@@ -11,14 +11,14 @@ let statsFile = null;
 
 // Create server and start listening
 const server = http.createServer(handleRequest);
-server.listen(1337, '10.203.0.207', startServer);
+server.listen(1337, '172.31.87.199', startServer);
 
 // Handle server shutdown
 process.on('SIGINT', stopServer);
 
 function startServer() {
     console.log("Running node.js %s on %s-%s", process.version, process.platform, process.arch);
-    console.log('Server running at http://10.203.0.207:1337/');
+    console.log('Server running at http://172.31.87.199:1337/');
     if (!fs.existsSync('./streaming_stats')) {
         fs.mkdirSync('./streaming_stats');
     }
@@ -49,7 +49,7 @@ function handleRequest(request, response) {
 
     // If the root of the server is accessed, serve the index.html file
     if (request.url === '/') {
-        const filePath = path.join(currentWorkingDirectory, 'server', 'index.html');
+        const filePath = path.join(currentWorkingDirectory, 'server_over_network_aws', 'index.html');
         const contentType = 'text/html';
         serveFile(response, filePath, contentType);
         return;
@@ -58,7 +58,7 @@ function handleRequest(request, response) {
     if (firstRequestTime === null) {
         firstRequestTime = Date.now();
     }
-    const filePath = './server/videos' + request.url;
+    const filePath = './server_over_network_aws/videos' + request.url;
     console.log('filepath: ' + filePath + '\n');
 
     let resolution = null

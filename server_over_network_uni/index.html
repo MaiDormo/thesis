@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        #videoPlayer {
+            width: 800px;
+            height: 450px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+        canvas {
+            width: 800px;
+            height: 450px;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+        #downloadButton {
+            font-size: 16px;
+            padding: 15px 30px; /* increased padding */
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block; /* added to allow centering */
+            margin: 0 auto; /* added to center the button */
+        }
+        #downloadButton:hover {
+            background-color: #0056b3;
+        }
+        #downloadButton::before {
+            content: "\21E9\00A0"; /* Unicode download icon and a non-breaking space */
+        }
+    </style>
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <video id="videoPlayer" controls></video>
+        <button id="downloadButton">Download CSVs</button>
+        <canvas id="myChart"></canvas>
+        <canvas id="resolutionChart"></canvas>
+        <canvas id="droppedFramesChart"></canvas>
+    </div>
+
+    <script src="../client/client.js"></script>
+</body>
+</html>
