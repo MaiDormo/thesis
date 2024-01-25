@@ -7,8 +7,8 @@ SAVEDIR=$(pwd)
 
 # then we check wether the needed programs, ffmpeg and MP4Box, are installed.
 # if not, a message appears in the terminal informing the user.
-if [ -z "$(which ffmpeg)" ]; then
-    echo "Error: ffmpeg is not installed"
+if [ -z "$(which x264)" ]; then
+    echo "Error: x264 is not installed"
     exit 1
 fi
 

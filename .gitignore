@@ -85,6 +85,8 @@ wireshark/
 #x246
 x264_2pass.log
 x264_2pass.log.mbtree
+x264_2pass.log.temp
+x264_2pass.log.mbtree.temp
 *.264
 
 #dash
