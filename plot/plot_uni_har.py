@@ -29,10 +29,16 @@ def parse_and_plot_har_file(filename):
     contributions = {timing: sum(timing_data[timing]) / total_time * 100 for timing in timings}
     means = {timing: np.mean(timing_data[timing]) for timing in timings}
     sums = {timing: sum(timing_data[timing]) for timing in timings}
+    deviation = {timing: np.std(timing_data[timing]) for timing in timings}
 
     df = pd.DataFrame([
-        {'Category': timing, 'Contribution': contributions[timing], 'Mean': means[timing], 'Sum': sums[timing]} 
-        for timing in timings
+        {
+            'Category': timing, 
+            'Contribution': contributions[timing], 
+            'Mean': means[timing], 
+            'Deviation': deviation[timing], 
+            'Sum': sums[timing]
+        } for timing in timings
     ])
 
     print(df)
