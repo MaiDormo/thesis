@@ -32,16 +32,19 @@ plt.figure()
 for column in data.columns[1:]:
     plt.plot(data['Time'], data[column], label=column, color=next(colors))
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+plt.savefig('statistics/aws/aws_data.png', dpi=300)
 
 # Plot resolution data
 plt.figure()
 plt.plot(resolution_data['Time'], resolution_data['ResolutionIndex'], label='Resolution')
 plt.yticks(range(len(resolution_order)), resolution_order) # Set y-tick labels to resolution_order
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+plt.savefig('statistics/aws/aws_resolution.png', dpi=300)
 
 # Plot dropped frames data
 plt.figure()
 plt.plot(droppedFrames_data['Time'], droppedFrames_data['Dropped Frames'], label='Dropped Frames')
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+plt.savefig('statistics/aws/aws_dropped_frames.png', dpi=300)
 
 plt.show()

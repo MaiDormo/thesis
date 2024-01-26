@@ -8,6 +8,7 @@ from progress.bar import Bar
 def parse_and_plot_har_file(filename):
     timings = ['blocked', 'connect', 'send', 'wait', 'receive', '_blocked_queueing']
     timing_data = {timing: [] for timing in timings}
+    urls = []
 
     with open(filename, 'r') as f:
         har_data = json.load(f)
@@ -18,6 +19,8 @@ def parse_and_plot_har_file(filename):
             if url.startswith('http://10.203.0.207:1337/bbb_sunflower_2160p_30fps_normal_'):
                 match = re.search(r'_(\d+)p', url)
                 if match:
+                    res = match.group(1) + 'p'
+                    urls.append(res)
                     for timing in timings:
                         time = entry['timings'].get(timing, 0)
                         timing_data[timing].append(max(0, time if time != -1 else 0))
@@ -43,9 +46,9 @@ def parse_and_plot_har_file(filename):
 
     print(df)
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(15, 6))
 
-    width = 0.35
+    width = 0.5
     ind = np.arange(len(timing_data['blocked']))
 
     cum_bottom = np.zeros(len(timing_data['blocked']))
@@ -56,10 +59,11 @@ def parse_and_plot_har_file(filename):
     plt.xlabel('Resolution')
     plt.ylabel('Time (ms)')
     plt.title('Timing Information per Resolution')
-    plt.xticks(ind, rotation=45)
+    plt.xticks(ind, urls, rotation=45)
     plt.legend()
 
     plt.tight_layout()
+    plt.savefig('statistics/uni/uni.png', dpi=300)
     plt.show()
 
 parse_and_plot_har_file('statistics/uni/uni.har')
