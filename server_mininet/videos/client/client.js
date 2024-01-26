@@ -181,10 +181,6 @@ function logMoreData(e) {
     if (droppedFrameCount !== null) {
         droppedFrames.push(droppedFrameCount.droppedFrames); // Add dropped frames
     }
-
-    // const downloadLatency = player.getCurrentLiveLatency();
-    // downloadLatencies.push(downloadLatency); // Add download latency
-    //updateChart();
 }
 
 
