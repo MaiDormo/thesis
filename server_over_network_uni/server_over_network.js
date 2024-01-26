@@ -7,7 +7,6 @@ console.log('Current Working Directory:', currentWorkingDirectory);
 
 let serverStartTime = null;
 let firstRequestTime = null;
-let statsFile = null;
 
 // Create server and start listening
 const server = http.createServer(handleRequest);
@@ -19,10 +18,6 @@ process.on('SIGINT', stopServer);
 function startServer() {
     console.log("Running node.js %s on %s-%s", process.version, process.platform, process.arch);
     console.log('Server running at http://10.203.0.207:1337/');
-    if (!fs.existsSync('./streaming_stats')) {
-        fs.mkdirSync('./streaming_stats');
-    }
-    statsFile = './streaming_stats/stats_' + myCurrentDate() + '.json';
     serverStartTime = Date.now(); // Start the clock
 }
  
