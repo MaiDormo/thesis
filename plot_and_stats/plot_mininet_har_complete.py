@@ -1,8 +1,21 @@
 import json
 import re
+import argparse
 import numpy as np
 import pandas as pd
 from progress.bar import Bar
+
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--bw', type=int, required=True, help='Bandwidth')
+parser.add_argument('--delay', type=int, required=True, help='Delay')
+parser.add_argument('--loss', type=int, required=True, help='Loss')
+
+args = parser.parse_args()
+
+bw = args.bw
+delay = args.delay
+loss = args.loss
 
 def parse_multiple_har_files(filenames):
     timings = ['blocked', 'connect', 'send', 'wait', 'receive', '_blocked_queueing']
@@ -70,9 +83,6 @@ def parse_multiple_har_files(filenames):
     print(df)
 
 
-bw = 50
-delay = 100
-loss = 0
 number_of_runs = 3
 filenames = []
 for i in range(1, number_of_runs+1):
