@@ -1,17 +1,24 @@
 #!/usr/bin/env python
 
+import argparse
 from mininet.net import Mininet
 from mininet.node import RemoteController, OVSKernelSwitch, Host
 from mininet.cli import CLI
 from mininet.log import setLogLevel
 from mininet.link import TCLink
-from tkinter import Tk, Label, Entry, Button, StringVar, ttk
 
 def main():
-    setLogLevel('info')
-    create_network()
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Network Parameters')
+    parser.add_argument('--bw', type=int, required=True, help='Bandwidth')
+    parser.add_argument('--delay', type=str, required=True, help='Delay')
+    parser.add_argument('--loss', type=int, required=True, help='Loss')
+    args = parser.parse_args()
 
-def create_network():
+    setLogLevel('info')
+    create_network(args.bw, args.delay, args.loss)
+
+def create_network(bw, delay, loss):
     # Create network
     net = Mininet(topo=None, build=False, ipBase='10.0.0.0/8')
 
@@ -30,44 +37,8 @@ def create_network():
     net.addLink(h1, s1, cls=TCLink)
     net.addLink(h2, s2, cls=TCLink)
 
-# Create GUI for inputting link parameters
-    root = Tk()
-    root.title("Network Parameters")
-
-    mainframe = ttk.Frame(root, padding="3 3 12 12")
-    mainframe.grid(column=0, row=0, sticky=('N', 'W', 'E', 'S'))
-    root.columnconfigure(0, weight=1)
-    root.rowconfigure(0, weight=1)
-
-    bw = StringVar()
-    delay = StringVar()
-    loss = StringVar()
-
-    ttk.Label(mainframe, text="Bandwidth").grid(column=1, row=1, sticky=('W', 'E'))
-    bw_entry = ttk.Entry(mainframe, width=7, textvariable=bw)
-    bw_entry.grid(column=2, row=1, sticky=('W', 'E'))
-
-    ttk.Label(mainframe, text="Delay").grid(column=1, row=2, sticky=('W', 'E'))
-    delay_entry = ttk.Entry(mainframe, width=7, textvariable=delay)
-    delay_entry.grid(column=2, row=2, sticky=('W', 'E'))
-
-    ttk.Label(mainframe, text="Loss").grid(column=1, row=3, sticky=('W', 'E'))
-    loss_entry = ttk.Entry(mainframe, width=7, textvariable=loss)
-    loss_entry.grid(column=2, row=3, sticky=('W', 'E'))
-
-    ttk.Button(mainframe, text="Submit", command=root.quit).grid(column=2, row=4, sticky='W')
-
-    for child in mainframe.winfo_children(): 
-        child.grid_configure(padx=5, pady=5)
-
-    bw_entry.focus()
-    root.bind('<Return>', lambda e: root.quit())
-
-    root.mainloop()
-
-    # Add link with parameters from GUI
-    net.addLink(s1, s2, cls=TCLink, bw=int(bw.get()), delay=delay.get()+'ms', loss=int(loss.get()))
-
+    # Add link with parameters from command-line arguments
+    net.addLink(s1, s2, cls=TCLink, bw=bw, delay=delay+'ms', loss=loss)
 
     # Start network
     net.build()
@@ -83,7 +54,6 @@ def create_network():
     # Start CLI and stop network
     CLI(net)
     net.stop()
-
 
 if __name__ == '__main__':
     main()

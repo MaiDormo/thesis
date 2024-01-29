@@ -11,13 +11,13 @@ def convert_to_seconds(timestr):
     return m * 60 + s
 
 # Read data from CSV file
-data = pd.read_csv('statistics/aws/data_aws_3.csv')
+data = pd.read_csv('statistics/mininet/data_50_20_0_2.csv')
 data['Time'] = data['Time'].apply(convert_to_seconds)
 
-resolution_data = pd.read_csv('statistics/aws/resolutionData_aws_3.csv')
+resolution_data = pd.read_csv('statistics/mininet/resolutionData_50_20_0_2.csv')
 resolution_data['Time'] = resolution_data['Time'].apply(convert_to_seconds)
 
-droppedFrames_data = pd.read_csv('statistics/aws/droppedFrames_aws_3.csv')
+droppedFrames_data = pd.read_csv('statistics/mininet/droppedFrames_50_20_0_2.csv')
 droppedFrames_data['Time'] = droppedFrames_data['Time'].apply(convert_to_seconds)
 
 # Convert 'Resolution' values to their indices in resolution_order
@@ -32,16 +32,19 @@ plt.figure()
 for column in data.columns[1:]:
     plt.plot(data['Time'], data[column], label=column, color=next(colors))
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+plt.savefig('statistics/mininet/mininet_data.png', dpi=300)
 
 # Plot resolution data
 plt.figure()
 plt.plot(resolution_data['Time'], resolution_data['ResolutionIndex'], label='Resolution')
 plt.yticks(range(len(resolution_order)), resolution_order) # Set y-tick labels to resolution_order
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+plt.savefig('statistics/mininet/mininet_resolution.png', dpi=300)
 
 # Plot dropped frames data
 plt.figure()
 plt.plot(droppedFrames_data['Time'], droppedFrames_data['Dropped Frames'], label='Dropped Frames')
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+plt.savefig('statistics/mininet/mininet_dropped_frames.png', dpi=300)
 
 plt.show()
