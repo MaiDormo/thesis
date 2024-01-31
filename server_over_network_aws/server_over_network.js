@@ -17,7 +17,7 @@ process.on('SIGINT', stopServer);
 
 function startServer() {
     console.log("Running node.js %s on %s-%s", process.version, process.platform, process.arch);
-    console.log('Server running at http:/0.0.0.0:1337/');
+    console.log('Server running at http://0.0.0.0:1337/');
     serverStartTime = Date.now(); // Start the clock
 }
  
