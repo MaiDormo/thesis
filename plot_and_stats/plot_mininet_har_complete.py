@@ -7,9 +7,9 @@ from progress.bar import Bar
 
 
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--bw', type=int, required=True, help='Bandwidth')
-parser.add_argument('--delay', type=int, required=True, help='Delay')
-parser.add_argument('--loss', type=int, required=True, help='Loss')
+parser.add_argument('-bw', type=int, required=True, help='Bandwidth')
+parser.add_argument('-delay', type=int, required=True, help='Delay')
+parser.add_argument('-loss', type=int, required=True, help='Loss')
 
 args = parser.parse_args()
 
@@ -19,7 +19,7 @@ loss = args.loss
 
 def parse_multiple_har_files(filenames):
     timings = ['blocked', 'connect', 'send', 'wait', 'receive', '_blocked_queueing']
-    timing_data = {timing: [] for timing in timings}
+    
     urls = []
     total_times = []
     contributions = []
@@ -28,6 +28,7 @@ def parse_multiple_har_files(filenames):
     deviations = []
 
     for index, filename in enumerate(filenames):
+        timing_data = {timing: [] for timing in timings}
         with open(filename, 'r') as f:
             har_data = json.load(f)
 
@@ -35,7 +36,7 @@ def parse_multiple_har_files(filenames):
             for entry in har_data['log']['entries']:
                 url = entry['request']['url']
                 if url.startswith('http://10.0.0.1:1337/bbb_sunflower_2160p_30fps_normal_'):
-                    match = re.search(r'_(\d+)p', url)
+                    match = re.search(r'normal_(\d+)', url)
                     if match:
                         res = match.group(1) + 'p'
                         urls.append(res)

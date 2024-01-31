@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#This file is used in order to download the video and convert it to a 5 minute video, 
+#while maintaining the original name
+
 # Define the URL of the zip file
 url="https://download.blender.org/demo/movies/BBB/bbb_sunflower_2160p_30fps_normal.mp4.zip"
 
