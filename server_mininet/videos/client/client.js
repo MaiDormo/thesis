@@ -24,6 +24,9 @@ let startTime = Date.now();
 let totalRequests = 0;
 let totalFrames = 0;
 
+let startupTime;
+let firstSegmentLoaded = false;
+
 const player = createPlayer();
 
 document.addEventListener('DOMContentLoaded', initializePlayer);
@@ -33,6 +36,7 @@ document.getElementById('downloadButton').addEventListener('click', downloadAllC
 function createPlayer() {
     const player = dashjs.MediaPlayer().create();
     // player.on(dashjs.MediaPlayer.events.FRAGMENT_LOADING_COMPLETED, logDownloadRate);
+    player.on(dashjs.MediaPlayer.events.PLAYBACK_STARTED, function () {startupTime = Date.now();});
     player.on(dashjs.MediaPlayer.events.FRAGMENT_LOADING_COMPLETED, logDownloadRateSlidingWindow);  
     player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, logMoreData);
     player.on(dashjs.MediaPlayer.events["PLAYBACK_PAUSED"], function () {
@@ -46,6 +50,9 @@ function createPlayer() {
 function initializePlayer() {
     const video = document.querySelector('#videoPlayer');
     player.initialize(video, URL);
+    startupTime = Date.now();
+    video.muted = true;
+    video.play();
     // Create CSV files and write headers
     csvData['data.csv'] = 'Time,Download Rate,Buffer Length,Bitrate,Effective Bitrate\n';
     csvData['resolutionData.csv'] = 'Time,Resolution\n';
@@ -115,6 +122,12 @@ function logDownloadRateSlidingWindow(e) {
         const elapsedTime = (Date.now() - startTime) / 1000; // in seconds
         const downloadRate = (e.request.bytesTotal * 8) / (elapsedTime * BITS_IN_MEGABIT); // Convert to Mbps
 
+        // Calculate the startup delay when the first segment is loaded
+        if (!firstSegmentLoaded) {
+            const startupDelay = Date.now() - startupTime;
+            console.log('Startup delay: ' + startupDelay);
+            firstSegmentLoaded = true;
+        }
 
         // Add the new packet to the array
         lastThreePackets.push({time: Date.now(), rate: downloadRate});

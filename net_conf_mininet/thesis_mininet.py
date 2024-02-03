@@ -23,7 +23,7 @@ def create_network(bw, delay, loss):
     net = Mininet(topo=None, build=False, ipBase='10.0.0.0/8')
 
     # Add controller
-    c0 = net.addController(name='c0', controller=RemoteController, ip='192.168.56.7', port=6633)
+    c0 = net.addController(name='c0', controller=RemoteController, ip='192.168.56.9', port=6633)
 
     # Add switches
     s1 = net.addSwitch('s1', cls=OVSKernelSwitch)
