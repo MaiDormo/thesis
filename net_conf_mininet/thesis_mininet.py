@@ -32,10 +32,14 @@ def create_network(bw, delay, loss):
     # Add hosts
     h1 = net.addHost('h1', cls=Host, ip='10.0.0.1', defaultRoute=None)
     h2 = net.addHost('h2', cls=Host, ip='10.0.0.2', defaultRoute=None)
+    h3 = net.addHost('h3', cls=Host, ip='10.0.0.3', defaultRoute=None)
+    h4 = net.addHost('h4', cls=Host, ip='10.0.0.4', defaultRoute=None)
 
     # Add links
     net.addLink(h1, s1, cls=TCLink)
+    net.addLink(h3, s1, cls=TCLink)
     net.addLink(h2, s2, cls=TCLink)
+    net.addLink(h4, s2, cls=TCLink)
 
     # Add link with parameters from command-line arguments
     net.addLink(s1, s2, cls=TCLink, bw=bw, delay=delay+'ms', loss=loss)
