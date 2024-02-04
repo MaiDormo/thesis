@@ -63,7 +63,7 @@ def main():
     df_resolution_changes = assign_conditions(df_resolution_changes, conditions)
 
     create_heatmap(df_total_time_and_startup_delay, 'Startup Delay (avg ms)', 'Startup Delay (std ms)', 'Heatmap of Startup Delay (ms)')
-    create_heatmap(df_resolution_changes, 'Resolution Changes (avg)', 'Resolution Changes (std)', 'Heatmap of Resolution Changes')
+    create_heatmap(df_resolution_changes, 'Resolution Changes (avg)', 'Resolution Changes (std)', 'Heatmap of Resolution Changes Requested by the Client')
 
 if __name__ == "__main__":
     main()
