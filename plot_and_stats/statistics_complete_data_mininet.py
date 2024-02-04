@@ -75,6 +75,9 @@ def calculate_and_print_statistics(run, data, resolution_data, droppedFrames_dat
     return bandwidth_utilization, rebuffering_events, avg_effective_bitrate, resolution_changes, correlation, avg_data
 
 def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs):
+
+    debug_print(colored(f"---------------------{bw}_{delay}_{loss}-----------------", 'yellow'))
+
     bandwidth_utilization_for_each_run = []
     rebuffering_events_for_each_run = []
     effective_bitrate_for_each_run = []
@@ -101,7 +104,7 @@ def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs
         droppedFrames_percentage_for_each_run.append(droppedFrames_data['Dropped Frames'].max() / (droppedFrames_data['Time'].max() * fps) * 100)
         correlation_for_each_run.append(correlation)
         all_runs_avg_data = pd.concat([all_runs_avg_data,avg_data])
-    debug_print ("-----------------------------------------------------------------------")
+    debug_print ("-----------------------AVERAGES------------------------------------")
 
     avg_bandwidth_utilization_for_each_run = round(np.mean(bandwidth_utilization_for_each_run), 2)
     std_bandwidth_utilization_for_each_run = round(np.std(bandwidth_utilization_for_each_run), 2)
