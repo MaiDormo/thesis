@@ -3,7 +3,10 @@ import numpy as np
 from termcolor import colored
 
 DEBUG = 1
+NUMBER_OF_RUNS = 3
 RUN_MAIN = True
+AWS = 'aws'
+UNI = 'uni'
 
 resolution_order = ['320x180', '480x270', '640x360',  '768x432', '940x540', '1024x576', '1280x720', '1920x1080', '2560x1440', '3840x2160']
 
@@ -27,18 +30,16 @@ def calculate_resolution_changes(resolution_data):
     resolution_changes = (resolution_data['Resolution'][1:] != resolution_data['Resolution'].shift()[1:]).sum()
     return resolution_changes
 
-def calculate_and_print_statistics(run, data, resolution_data, droppedFrames_data, bw):
+def calculate_and_print_statistics(run, data, resolution_data, droppedFrames_data):
     data['Buffer Length Drop'] = data['Buffer Length'].diff()
     rebuffering_events = (data['Buffer Length'] < buffer_length_treshold).sum()
 
     resolution_data['ResolutionIndex'] = resolution_data['Resolution'].apply(lambda x: resolution_order.index(x))
-    bandwidth_utilization = round(data['Download Rate'].mean() / bw * 100, 2)
     droppedFrames_percentage = round(droppedFrames_data['Dropped Frames'].max() / (droppedFrames_data['Time'].max() * fps) * 100, 2)
     resolution_changes = calculate_resolution_changes(resolution_data)
     correlation = data['Download Rate'].corr(data['Buffer Length'])
 
     debug_print(colored(f"Rebuffering events for run {run}: {rebuffering_events}", 'yellow'))
-    debug_print(colored(f"Bandwidth utilization for run {run}: {bandwidth_utilization} %", 'green'))
     debug_print(colored(f"Dropped frames for run {run}: {droppedFrames_percentage} %", 'red'))
     debug_print(colored(f"Resolution changes for run {run}: {resolution_changes}", 'blue'))
     debug_print(colored(f"Correlation between download rate and buffer length for run {run}: {correlation}", 'cyan'))
@@ -73,13 +74,12 @@ def calculate_and_print_statistics(run, data, resolution_data, droppedFrames_dat
 
     
 
-    return bandwidth_utilization, rebuffering_events, avg_effective_bitrate, resolution_changes, correlation, avg_data
+    return rebuffering_events, avg_effective_bitrate, resolution_changes, correlation, avg_data
 
-def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs):
+def parse_multiple_data_files_and_give_statistic(case):
 
-    debug_print(colored(f"---------------------{bw}_{delay}_{loss}-----------------", 'yellow'))
-
-    bandwidth_utilization_for_each_run = []
+    debug_print(colored(f"--------------------------------------", 'yellow'))
+    
     rebuffering_events_for_each_run = []
     effective_bitrate_for_each_run = []
     resolution_changes_for_each_run = []
@@ -87,18 +87,17 @@ def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs
     correlation_for_each_run = []
     all_runs_avg_data = pd.DataFrame()
 
-    for run in range(1, number_of_runs + 1):
-        base_path = f'statistics/mininet/{bw}_{delay}_{loss}/'
-        data_file = f'{base_path}data_{bw}_{delay}_{loss}_{run}.csv'
-        resolution_file = f'{base_path}resolutionData_{bw}_{delay}_{loss}_{run}.csv'
-        droppedFrames_file = f'{base_path}droppedFrames_{bw}_{delay}_{loss}_{run}.csv'
+    for run in range(1, NUMBER_OF_RUNS + 1):
+        base_path = f'statistics/{case}/'
+        data_file = f'{base_path}data_{case}_{run}.csv'
+        resolution_file = f'{base_path}resolutionData_{case}_{run}.csv'
+        droppedFrames_file = f'{base_path}droppedFrames_{case}_{run}.csv'
 
         data = read_and_process_data(data_file)
         resolution_data = read_and_process_data(resolution_file)
         droppedFrames_data = read_and_process_data(droppedFrames_file)
 
-        bandwidth_utilization, rebuffering_events, effective_bitrate, resolution_changes, correlation, avg_data = calculate_and_print_statistics(run, data, resolution_data, droppedFrames_data, bw)
-        bandwidth_utilization_for_each_run.append(bandwidth_utilization)
+        rebuffering_events, effective_bitrate, resolution_changes, correlation, avg_data = calculate_and_print_statistics(run, data, resolution_data, droppedFrames_data)
         rebuffering_events_for_each_run.append(rebuffering_events)
         effective_bitrate_for_each_run.append(effective_bitrate)
         resolution_changes_for_each_run.append(resolution_changes)
@@ -107,8 +106,6 @@ def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs
         all_runs_avg_data = pd.concat([all_runs_avg_data,avg_data])
     debug_print ("-----------------------AVERAGES------------------------------------")
 
-    avg_bandwidth_utilization_for_each_run = round(np.mean(bandwidth_utilization_for_each_run), 2)
-    std_bandwidth_utilization_for_each_run = round(np.std(bandwidth_utilization_for_each_run), 2)
     avg_rebuffering_events_for_each_run = round(np.mean(rebuffering_events_for_each_run), 2)
     std_rebuffering_events_for_each_run = round(np.std(rebuffering_events_for_each_run), 2)
     avg_effective_bitrate_for_each_run = round(np.mean(effective_bitrate_for_each_run), 2)
@@ -124,8 +121,6 @@ def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs
     std_all_runs_avg_data = all_runs_avg_data.std()
 
 
-    debug_print(colored(f"Average bandwidth utilization for all runs: {avg_bandwidth_utilization_for_each_run}%", 'green'))
-    debug_print(colored(f"Standard deviation of bandwidth utilization for all runs: {std_bandwidth_utilization_for_each_run}%", 'green'))
     debug_print(colored(f"Average rebuffering events for all runs: {avg_rebuffering_events_for_each_run}", 'yellow'))
     debug_print(colored(f"Standard deviation of rebuffering events for all runs: {std_rebuffering_events_for_each_run}", 'yellow'))
     debug_print(colored(f"Average effective bitrate for all runs: {avg_effective_bitrate_for_each_run} Mbps", 'green'))
@@ -143,8 +138,6 @@ def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs
     debug_print(std_all_runs_avg_data)
 
     return_values = {
-        "avg_bandwidth_utilization_for_each_run": avg_bandwidth_utilization_for_each_run,
-        "std_bandwidth_utilization_for_each_run": std_bandwidth_utilization_for_each_run,
         "avg_rebuffering_events_for_each_run": avg_rebuffering_events_for_each_run,
         "std_rebuffering_events_for_each_run": std_rebuffering_events_for_each_run,
         "avg_effective_bitrate_for_each_run": avg_effective_bitrate_for_each_run,
@@ -160,15 +153,10 @@ def parse_multiple_data_files_and_give_statistic(bw, delay, loss, number_of_runs
     }
     return return_values
 
-if RUN_MAIN: 
-    PARAMETERS = {
-        'bandwidths': [10, 20],
-        'delays': [20, 100],
-        'losses': [0, 2],
-        'number_of_runs': 3
-    }
+if RUN_MAIN:
+    print('------------------------AWS-------------------------------')
+    parse_multiple_data_files_and_give_statistic(AWS)
 
-    parse_multiple_data_files_and_give_statistic(10, 20, 0, 3)
-    parse_multiple_data_files_and_give_statistic(10, 20, 2, 3)
-    parse_multiple_data_files_and_give_statistic(20, 20, 0, 3)
-    parse_multiple_data_files_and_give_statistic(20, 20, 2, 3)
+    print('------------------------UNI-------------------------------')
+
+    parse_multiple_data_files_and_give_statistic(UNI)

@@ -66,4 +66,4 @@ def parse_and_plot_har_file(filename):
     plt.savefig('statistics/uni/uni.png', dpi=300)
     plt.show()
 
-parse_and_plot_har_file('statistics/uni/uni.har')
+parse_and_plot_har_file('statistics/uni/uni_2.har')

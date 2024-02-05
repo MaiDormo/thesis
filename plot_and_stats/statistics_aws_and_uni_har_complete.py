@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 from termcolor import colored
 
 DEBUG = 0
+NUMBER_OF_RUNS = 3
+RUN_MAIN = False
 
 bw = 10
 delay = 20
@@ -25,18 +27,18 @@ def get_startup_delay(startup_time, last_dash1_end_time):
     return None
 
 def print_startup_delay_and_res(startup_delay, startup_res, first_resolution):
-    if DEBUG == 1 and startup_delay is not None:
+    if DEBUG and startup_delay is not None:
         print(colored(f"\nStartup delay: {startup_delay} ms\n", 'green'))
         print(colored(f"Resolution of first segment: {startup_res}\n", 'green'))
         print(colored(f"First resolution displayed: {first_resolution}\n", 'green'))
 
 
 def print_total_waiting_time(total_times, index):
-    if DEBUG == 1:
+    if DEBUG:
         print(colored(f"Total waiting time: {total_times[index]} ms\n", 'blue'))
 
 def print_dataframe(timings, contributions, means, sums, deviations, index):
-    if DEBUG == 1:
+    if DEBUG:
         df = pd.DataFrame([
             {
                 'Category': timing, 
@@ -50,7 +52,7 @@ def print_dataframe(timings, contributions, means, sums, deviations, index):
         print("\n" + "="*80 + "\n")
 
 def print_averages(timings, total_times, contributions, means, sums, deviations, filenames):
-    if DEBUG == 1:
+    if DEBUG:
         print(colored("Averages:", 'yellow'))
         print(f"Total Waiting Time: {sum(total_times)/len(filenames)/1000} seconds")
         contributions_avg = {timing: sum(d[timing] for d in contributions) / len(contributions) for timing in timings}
@@ -76,7 +78,7 @@ def calculate_resolution_changes(resolution_data):
     resolution_changes = np.count_nonzero(np.diff(list(resolution_data)) != 0)
     return resolution_changes
 
-def get_averages(timings, total_times, contributions, means, sums, deviations, filenames, startup_delays, bw, delay, loss, resolution_changes):
+def get_averages(timings, total_times, contributions, means, sums, deviations, filenames, startup_delays, resolution_changes):
         avg_total_waiting_segment_time = sum(total_times)/len(filenames)/1000
         contributions_avg = {timing: sum(d[timing] for d in contributions) / len(contributions) for timing in timings}
         means_avg = {timing: sum(d[timing] for d in means) / len(means) for timing in timings}
@@ -89,9 +91,6 @@ def get_averages(timings, total_times, contributions, means, sums, deviations, f
 
         df_total_avg_timings = pd.DataFrame([
             {
-                'Bandwidth': bw,
-                'Delay': delay,
-                'Loss': loss,
                 'Category': timing, 
                 'Contribution (avg %)': contributions_avg[timing], 
                 'Mean (avg ms)': means_avg[timing], 
@@ -103,9 +102,6 @@ def get_averages(timings, total_times, contributions, means, sums, deviations, f
 
         df_total_time_and_startup_delay = pd.DataFrame([
             {
-                'Bandwidth': bw,
-                'Delay': delay,
-                'Loss': loss,
                 'Total Waiting Time (avg s)': avg_total_waiting_segment_time,
                 'Startup Delay (avg ms)': avg_startup_delay,
                 'Startup Delay (std ms)': startup_delays_std
@@ -114,9 +110,6 @@ def get_averages(timings, total_times, contributions, means, sums, deviations, f
 
         df_resolution_changes = pd.DataFrame([
             {
-                'Bandwidth': bw,
-                'Delay': delay,
-                'Loss': loss,
                 'Resolution Changes (avg)': avg_resolution_changes,
                 'Resolution Changes (std)': std_resolution_changes
             }
@@ -125,12 +118,12 @@ def get_averages(timings, total_times, contributions, means, sums, deviations, f
         return df_total_avg_timings, df_total_time_and_startup_delay, df_resolution_changes
 
 def print_avg_startup_delay(startup_delays):
-    if DEBUG == 1:
+    if DEBUG:
         if startup_delays:
             avg_startup_delay = sum(startup_delays) / len(startup_delays)
             print(colored(f"\nAverage startup delay: {avg_startup_delay} ms\n", 'red'))
 
-def parse_multiple_har_files(filenames, bw, delay, loss):
+def parse_multiple_har_files(filenames, case):
     timings = ['blocked', 'connect', 'send', 'wait', 'receive', '_blocked_queueing']
     
     resolution_changes = []
@@ -141,6 +134,12 @@ def parse_multiple_har_files(filenames, bw, delay, loss):
     deviations = []
     startup_delays = []
 
+    url_starts_with = ''
+    if case == 'aws':
+        url_starts_with = 'http://localhost:1337/bbb_sunflower_2160p_30fps_normal_'
+    else:
+        url_starts_with = 'http://10.203.0.207:1337/bbb_sunflower_2160p_30fps_normal_'
+
     for index, filename in enumerate(filenames):
         timing_data = {timing: [] for timing in timings}
         resolutions = []
@@ -148,7 +147,7 @@ def parse_multiple_har_files(filenames, bw, delay, loss):
         last_dash1_time = None
         startup_res = None
 
-        resolution_data = pd.read_csv(f'statistics/mininet/{bw}_{delay}_{loss}/resolutionData_{bw}_{delay}_{loss}_{index+1}.csv')
+        resolution_data = pd.read_csv(f'statistics/{case}/resolutionData_{case}_{index+1}.csv')
         first_resolution = resolution_data['Resolution'].iloc[0]
         first_resolution = first_resolution.split('x')[1]
         
@@ -157,7 +156,8 @@ def parse_multiple_har_files(filenames, bw, delay, loss):
         
         for entry in har_data['log']['entries']:
             url = entry['request']['url']
-            if url.startswith('http://10.0.0.1:1337/bbb_sunflower_2160p_30fps_normal_'):
+
+            if url.startswith(url_starts_with):
                 match = re.search(r'normal_(\d+)', url)
                 if match:
                     res = match.group(1)
@@ -186,13 +186,45 @@ def parse_multiple_har_files(filenames, bw, delay, loss):
         if startup_delay is not None:
             startup_delays.append(startup_delay)
         
-    df_total_avg_timings, df_total_time_and_startup_delay, df_resolution_changes  = get_averages(timings, total_times, contributions, means, sums, deviations, filenames, startup_delays, bw, delay, loss, resolution_changes)
+        print_startup_delay_and_res(startup_delay, startup_res, first_resolution)
+        print_total_waiting_time(total_times, index)
+        print_dataframe(timings, contributions, means, sums, deviations, index)
+        
+    df_total_avg_timings, df_total_time_and_startup_delay, df_resolution_changes  = get_averages(timings, total_times, contributions, means, sums, deviations, filenames, startup_delays, resolution_changes)
+
+    print_avg_startup_delay(startup_delays)
+    print_averages(timings, total_times, contributions, means, sums, deviations, filenames)
+
 
     return df_total_avg_timings, df_total_time_and_startup_delay, df_resolution_changes
 
-def mininet_har(bw, delay, loss, number_of_runs):
+def data_har(case):
     filenames = []
-    for i in range(1, number_of_runs+1):
-        filenames.append(f'statistics/mininet/{bw}_{delay}_{loss}/mininet_{bw}_{delay}_{loss}_{i}.har')
+    for i in range(1, NUMBER_OF_RUNS+1):
+        filenames.append(f'statistics/{case}/{case}_{i}.har')
 
-    return parse_multiple_har_files(filenames, bw, delay, loss)
+    return parse_multiple_har_files(filenames, case)
+
+def load_data(case):
+    data_avg_timings = []
+    data_total_time_and_startup_delay = []
+    data_resolution_changes = []
+    
+    df_avg_timings, df_total_time_and_startup_delay, df_resolution_changes = data_har(case)
+    data_avg_timings.append(df_avg_timings)
+    data_total_time_and_startup_delay.append(df_total_time_and_startup_delay)
+    data_resolution_changes.append(df_resolution_changes)
+
+    return pd.concat(data_avg_timings), pd.concat(data_total_time_and_startup_delay), pd.concat(data_resolution_changes)
+
+if RUN_MAIN:
+    case = 'uni'
+    def main():
+        df_avg_timings, df_total_time_and_startup_delay, df_resolution_changes = load_data(case)
+
+        print(df_avg_timings)
+        print(df_total_time_and_startup_delay)
+        print(df_resolution_changes)
+
+    if __name__ == "__main__":
+        main()

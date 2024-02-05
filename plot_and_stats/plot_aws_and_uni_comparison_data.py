@@ -5,11 +5,10 @@ from matplotlib import colormaps
 
 PARAMETERS = {
     'resolution_order': ['320x180', '480x270', '640x360',  '768x432', '940x540', '1024x576', '1280x720', '1920x1080', '2560x1440', '3840x2160'],
-    'bw': 50,
-    'delay': 20,
-    'loss': 0,
     'number_of_runs': 3,
-    'run': 2
+    'run': 1,
+    'aws': 'aws',
+    'uni': 'uni',
 }
 
 def convert_to_seconds(timestr):
@@ -38,32 +37,32 @@ def plot_data(data, file_name, y_label=None, exclude_columns=None, ax=None, labe
     plt.savefig(file_name, dpi=300)
 
 def main(params):
-    data = read_and_process_data(f'statistics/mininet/{params["bw"]}_{params["delay"]}_{params["loss"]}/data_{params["bw"]}_{params["delay"]}_{params["loss"]}_{params["run"]}.csv')
-    resolution_data = read_and_process_data(f'statistics/mininet/{params["bw"]}_{params["delay"]}_{params["loss"]}/resolutionData_{params["bw"]}_{params["delay"]}_{params["loss"]}_{params["run"]}.csv')
+    data = read_and_process_data(f'statistics/{params["aws"]}/data_{params["aws"]}_{params["run"]}.csv')
+    resolution_data = read_and_process_data(f'statistics/{params["aws"]}/resolutionData_{params["aws"]}_{params["run"]}.csv')
     resolution_data['Resolution '] = resolution_data['Resolution'].apply(lambda x: params['resolution_order'].index(x))
-    droppedFrames_data = read_and_process_data(f'statistics/mininet/{params["bw"]}_{params["delay"]}_{params["loss"]}/droppedFrames_{params["bw"]}_{params["delay"]}_{params["loss"]}_{params["run"]}.csv')
+    droppedFrames_data = read_and_process_data(f'statistics/{params["aws"]}/droppedFrames_{params["aws"]}_{params["run"]}.csv')
 
-    data_traffic = read_and_process_data(f'statistics/mininet/traffic/{params["bw"]}_{params["delay"]}_{params["loss"]}/data_traffic_{params["bw"]}_{params["delay"]}_{params["loss"]}_{params["run"]}.csv')
-    resolution_data_traffic = read_and_process_data(f'statistics/mininet/traffic/{params["bw"]}_{params["delay"]}_{params["loss"]}/resolutionData_traffic_{params["bw"]}_{params["delay"]}_{params["loss"]}_{params["run"]}.csv')
+    data_traffic = read_and_process_data(f'statistics/{params["uni"]}/data_{params["uni"]}_{params["run"]}.csv')
+    resolution_data_traffic = read_and_process_data(f'statistics/{params["uni"]}/resolutionData_{params["uni"]}_{params["run"]}.csv')
     resolution_data_traffic['Resolution '] = resolution_data_traffic['Resolution'].apply(lambda x: params['resolution_order'].index(x))
-    droppedFrames_data_traffic = read_and_process_data(f'statistics/mininet/traffic/{params["bw"]}_{params["delay"]}_{params["loss"]}/droppedFrames_traffic_{params["bw"]}_{params["delay"]}_{params["loss"]}_{params["run"]}.csv')
+    droppedFrames_data_traffic = read_and_process_data(f'statistics/{params["uni"]}/droppedFrames_{params["uni"]}_{params["run"]}.csv')
 
     fig, ax = plt.subplots()
-    plot_data(data, 'statistics/mininet/mininet_data.png', exclude_columns=['Effective Bitrate'], ax=ax, linestyle='-')
-    plot_data(data_traffic, 'statistics/mininet/mininet_data.png', exclude_columns=['Effective Bitrate'], ax=ax, label_suffix=' (traffic)', is_traffic=True, linestyle='--')
+    plot_data(data, f'statistics/{params["aws"]}/data_{params["aws"]}.png', exclude_columns=['Effective Bitrate'], ax=ax, label_suffix=' (aws)', linestyle='-')
+    plot_data(data_traffic, f'statistics/{params["uni"]}/data_{params["uni"]}.png', exclude_columns=['Effective Bitrate'], ax=ax, label_suffix=' (uni)', is_traffic=True, linestyle='--')
 
     fig, ax1 = plt.subplots()
 
     # Plot resolution data
-    plot_data(resolution_data, 'statistics/mininet/mininet_resolution.png', params['resolution_order'], ['Resolution'], ax=ax1, cmap='cool', linestyle='-')
-    plot_data(resolution_data_traffic, 'statistics/mininet/mininet_resolution.png', params['resolution_order'], ['Resolution'], ax=ax1, label_suffix=' (traffic)', is_traffic=True, cmap='coolwarm', linestyle='--')
+    plot_data(resolution_data, f'statistics/{params["aws"]}/resolution_{params["aws"]}.png', params['resolution_order'], ['Resolution'], ax=ax1, label_suffix=' (aws)', cmap='cool', linestyle='-')
+    plot_data(resolution_data_traffic, f'statistics/{params["uni"]}/resolution_{params["uni"]}.png', params['resolution_order'], ['Resolution'], ax=ax1, label_suffix=' (uni)', is_traffic=True, cmap='coolwarm', linestyle='--')
 
     # Create a second y-axis that shares the same x-axis
     ax2 = ax1.twinx()
 
     # Plot dropped frames data with a different colormap
-    plot_data(droppedFrames_data, 'statistics/mininet/mininet_dropped_frames.png', ax=ax2, cmap='spring', linestyle='-.')
-    plot_data(droppedFrames_data_traffic, 'statistics/mininet/mininet_dropped_frames.png', ax=ax2, label_suffix=' (traffic)', is_traffic=True, cmap='summer', linestyle=':')
+    plot_data(droppedFrames_data, f'statistics/{params["aws"]}/dropped_frames_{params["aws"]}.png', ax=ax2, label_suffix=' (aws)', cmap='spring', linestyle='-.')
+    plot_data(droppedFrames_data_traffic, f'statistics/{params["uni"]}/dropped_frames_{params["uni"]}s.png', ax=ax2, label_suffix=' (uni)', is_traffic=True, cmap='summer', linestyle=':')
 
     # Gather all lines and labels from both Axes objects
     lines, labels = ax1.get_legend_handles_labels()
