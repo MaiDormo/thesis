@@ -1,23 +1,17 @@
 #!/bin/bash
 
-#This file is used in order to download the video and convert it to a 5 minute video, 
-#while maintaining the original name
-
 # Define the URL of the zip file
-url="https://download.blender.org/demo/movies/BBB/bbb_sunflower_2160p_30fps_normal.mp4.zip"
+local url="https://download.blender.org/demo/movies/BBB/bbb_sunflower_2160p_30fps_normal.mp4.zip"
+local base_name="bbb_sunflower_2160p_30fps_normal"
 
-# Download the zip file
-wget $url
-
-# Extract the zip file
-unzip bbb_sunflower_2160p_30fps_normal.mp4.zip
+# Download and extract the zip file
+wget "$url" -O "${base_name}.zip" && unzip "${base_name}.zip" && rm "${base_name}.zip"
 
 # Rename the video
-mv bbb_sunflower_2160p_30fps_normal.mp4 bbb_sunflower_2160p_30fps_normal_original.mp4
+mv "${base_name}.mp4" "${base_name}_original.mp4"
 
-# Run the ffmpeg command
-ffmpeg -ss 00:00:00 -i bbb_sunflower_2160p_30fps_normal_original.mp4 -t 00:05:00 -c copy bbb_sunflower_2160p_30fps_normal.mp4
+# Trim the video to  5 minutes
+ffmpeg -ss "00:00:00" -i "${base_name}_original.mp4" -t "00:05:00" -c copy "${base_name}.mp4"
 
-# Remove the original video and the zip file
-rm bbb_sunflower_2160p_30fps_normal_original.mp4
-rm file.zip
+# Remove the original video
+rm "${base_name}_original.mp4"
