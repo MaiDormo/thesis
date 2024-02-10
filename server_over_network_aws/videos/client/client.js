@@ -61,7 +61,8 @@ const config = {
                 label: 'Actual Resolution',
                 data: [],
                 borderColor: 'rgb(255, 99, 132)',
-                fill: false
+                fill: false,
+                tension: 0.4
             }
         ]
     },
@@ -202,26 +203,30 @@ function createChart(ctx) {
                     label: 'Download Rate',
                     data: [],
                     borderColor: 'rgb(75, 192, 192)',
-                    fill: false
+                    fill: false,
+                    tension: 0.4
                 },
                 {
                     label: 'Buffer Length',
                     data: [],
                     borderColor: 'rgb(0, 0, 255)',
-                    fill: false
+                    fill: false,
+                    tension: 0.4
                 },
                 {
                     label: 'Bitrate',
                     data: [],
                     borderColor: 'rgb(0, 255, 0)',
-                    fill: false
+                    fill: false,
+                    tension: 0.4
                 },
 
                 {
                     label: 'Effective Bitrate',
                     data: [],
                     borderColor: 'rgb(128, 0, 0)',
-                    fill: false
+                    fill: false,
+                    tension: 0.4
                 },
             ]
         },
@@ -238,7 +243,8 @@ function createDroppedFramesChart(ctx) {
                     label: 'Dropped Frames',
                     data: [],
                     borderColor: 'rgb(236, 124, 32)',
-                    fill: false
+                    fill: false,
+                    tension: 0.4
                 }
             ]
         },
