@@ -9,9 +9,9 @@ from mininet.link import TCLink
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Network Parameters')
-    parser.add_argument('--bw', type=int, required=True, help='Bandwidth')
-    parser.add_argument('--delay', type=str, required=True, help='Delay')
-    parser.add_argument('--loss', type=int, required=True, help='Loss')
+    parser.add_argument('-bw', type=int, required=True, help='Bandwidth')
+    parser.add_argument('-delay', type=str, required=True, help='Delay')
+    parser.add_argument('-loss', type=int, required=True, help='Loss')
     return parser.parse_args()
 
 def create_network(bw, delay, loss):
