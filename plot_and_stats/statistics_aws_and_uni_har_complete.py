@@ -8,7 +8,7 @@ from termcolor import colored
 
 DEBUG = 0
 NUMBER_OF_RUNS = 3
-RUN_MAIN = False
+RUN_MAIN = True
 
 bw = 10
 delay = 20
@@ -218,7 +218,7 @@ def load_data(case):
     return pd.concat(data_avg_timings), pd.concat(data_total_time_and_startup_delay), pd.concat(data_resolution_changes)
 
 if RUN_MAIN:
-    case = 'uni'
+    case = 'aws'
     def main():
         df_avg_timings, df_total_time_and_startup_delay, df_resolution_changes = load_data(case)
 

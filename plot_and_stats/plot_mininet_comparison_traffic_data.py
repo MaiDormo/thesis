@@ -7,9 +7,9 @@ PARAMETERS = {
     'resolution_order': ['320x180', '480x270', '640x360',  '768x432', '940x540', '1024x576', '1280x720', '1920x1080', '2560x1440', '3840x2160'],
     'bw': 5,
     'delay': 100,
-    'loss': 0,
+    'loss': 2,
     'number_of_runs': 3,
-    'run': 1
+    'run': 2
 }
 
 def convert_to_seconds(timestr):
