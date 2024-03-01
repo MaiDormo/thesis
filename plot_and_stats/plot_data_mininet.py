@@ -26,10 +26,10 @@ def plot_data(data, file_name, y_label=None, exclude_columns=None):
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
     plt.savefig(file_name, dpi=300)
 
-data = read_and_process_data('statistics/mininet/50_100_2/data_50_100_2_3.csv')
-resolution_data = read_and_process_data('statistics//mininet/50_100_2/resolutionData_50_100_2_3.csv')
+data = read_and_process_data('statistics/mininet/50_20_0/data_50_20_0_3.csv')
+resolution_data = read_and_process_data('statistics//mininet/50_20_0/resolutionData_50_20_0_3.csv')
 resolution_data['Resolution '] = resolution_data['Resolution'].apply(lambda x: resolution_order.index(x))
-droppedFrames_data = read_and_process_data('statistics/mininet/50_100_2/droppedFrames_50_100_2_3.csv')
+droppedFrames_data = read_and_process_data('statistics/mininet/50_20_0/droppedFrames_50_20_0_3.csv')
 
 plot_data(data, 'statistics/mininet/mininet_data.png')
 plot_data(resolution_data, 'statistics/mininet/mininet_resolution.png', resolution_order, ['Resolution'])

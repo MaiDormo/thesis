@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from statistics_complete_data_mininet import parse_multiple_data_files_and_give_statistic
+from matplotlib.ticker import FuncFormatter
+
+# Set global font size
+plt.rcParams['font.size'] = 11
 
 # Define the bandwidth, delay, loss, and number of runs
 PARAMETERS = {
@@ -19,18 +23,11 @@ def calculate_statistics(bw, delay, loss, number_of_runs):
         'Loss': loss,
         'Download Rate': result['avg_all_runs_avg_data']['Download Rate'],
         'Avg Bandwith Utilization %': result['avg_bandwidth_utilization_for_each_run'],
-        'Download Rate Std': result['std_all_runs_avg_data']['Download Rate'],
-        'Std Bandwith Utilization %': result['std_bandwidth_utilization_for_each_run'],
         'Buffer Length': result['avg_all_runs_avg_data']['Buffer Length'],
-        'Buffer Length Std': result['std_all_runs_avg_data']['Buffer Length'],
         'Avg Dropped Frames': result['avg_all_runs_avg_data']['Dropped Frames'],
         'Avg Dropped Frames %': result['avg_droppedFrames_percentage_for_each_run'],
-        'Std Dropped Frames': result['std_all_runs_avg_data']['Dropped Frames'],
-        'Std Dropped Frames %': result['std_droppedFrames_percentage_for_each_run'],
-        'Avg Resolution Changes': result['std_resolution_changes_for_each_run'],
-        'Std Resolution Changes': result['std_resolution_changes_for_each_run'],
+        'Avg number of Resolution Changes': result['avg_resolution_changes_for_each_run'],
         'Avg Rebuffering Events': result['avg_rebuffering_events_for_each_run'],
-        'Std Rebuffering Events': result['std_rebuffering_events_for_each_run'],
     }
 
 def run_statistics_for_combinations(params):
@@ -46,7 +43,7 @@ def run_statistics_for_combinations(params):
         'Download Rate and Buffer Length': df['Download Rate'].corr(df['Buffer Length']),
         'Avg Dropped Frames and Buffer Length': df['Avg Dropped Frames'].corr(df['Buffer Length']),
         'Avg Dropped Frames and Download Rate': df['Avg Dropped Frames'].corr(df['Download Rate']),
-        'Avg Dropped Frames and Resolution Changes': df['Avg Dropped Frames %'].corr(df['Avg Resolution Changes'])
+        'Avg Dropped Frames and Resolution Changes': df['Avg Dropped Frames %'].corr(df['Avg number of Resolution Changes'])
     }
 
     for correlation_name, correlation_value in correlations.items():
@@ -55,49 +52,51 @@ def run_statistics_for_combinations(params):
     return df
 
 def create_scatterplot(df, x, y, hue, style, size, title):
-    plt.figure(figsize=(10, 6))
-    sns.scatterplot(data=df, x=x, y=y, hue=hue, style=style, size=size, sizes=(50, 200), palette='deep')
+    sns.set_theme(rc={'figure.figsize':(12,6), 'font.size':12, 'axes.labelsize':12})  # Increase the font size
+    sns.set_style("whitegrid")  # Set the background color to white
+    scatter_plot = sns.scatterplot(data=df, x=x, y=y, hue=hue, style=style, size=size, sizes=(50, 200), palette='deep')
     plt.xlabel(x)
     plt.ylabel(y)
     plt.title(title)
     plt.grid(True)
+
+    # Adjust x-axis limits
+    # xmin, xmax = scatter_plot.get_xlim()
+    # plt.xlim(xmin * 0.6, xmax * 1.4)  # Reduce white space by 5%
+
+    plt.savefig(f"statistics/{title.replace(' ', '_')}_scatterplot.png", dpi=300)
     plt.show()
 
 def create_heatmap(df, x_labels, title):
     heatmap_data = pd.DataFrame(columns=x_labels, index=PARAMETERS['bandwidths'])
-    heatmap_std = pd.DataFrame(columns=x_labels, index=PARAMETERS['bandwidths'])
 
     for bw in PARAMETERS['bandwidths']:
         for label, (delay, loss) in zip(x_labels, [(20, 0), (100, 0), (20, 2), (100, 2)]):
             filtered_data = df[(df['Bandwidth'] == bw) & (df['Delay'] == delay) & (df['Loss'] == loss)]
             avg = filtered_data['Avg ' + title].mean()
-            std = filtered_data['Std ' + title].mean()
             heatmap_data.loc[bw, label] = avg
-            heatmap_std.loc[bw, label] = std
 
     heatmap_data = heatmap_data.apply(pd.to_numeric, errors='coerce').fillna(0)
-    heatmap_std = heatmap_std.apply(pd.to_numeric, errors='coerce').fillna(0)
-
     heatmap_data = heatmap_data.round(2)
-    heatmap_std = heatmap_std.round(2)
 
-    heatmap_labels = heatmap_data.astype(str).apply(lambda x: x.apply(lambda y: "{:.2f}".format(float(y)))) + " (± " + heatmap_std.astype(str).apply(lambda x: x.apply(lambda y: "{:.2f}".format(float(y)))) + ")"
-
-    plt.figure(figsize=(10, 8))
-    ax = sns.heatmap(heatmap_data, annot=heatmap_labels.values, fmt="", cmap='YlGnBu')
+    plt.figure(figsize=(10, 6))
+    ax = sns.heatmap(heatmap_data, annot=True, fmt=".3g", cmap='YlGnBu', annot_kws={"size": 12})
     ax.invert_yaxis()
-    plt.title('Average ' + title + ' (± Standard Deviation) for each combination')
+    plt.title('Average ' + title + ' for each combination')
     plt.xlabel('Network Conditions')
     plt.ylabel('Bandwidth')
+
+    plt.savefig(f"statistics/{title.replace(' ', '_')}_heatmap.png", dpi=300)
+
     plt.show()
 
 # Call the function with the defined parameters
 df = run_statistics_for_combinations(PARAMETERS)
 
 # Sort the DataFrame
-df = df.sort_values(by=['Avg Dropped Frames', 'Std Dropped Frames', 'Download Rate', 'Buffer Length'])
+df = df.sort_values(by=['Avg Dropped Frames', 'Download Rate', 'Buffer Length'])
 
-x_labels = ['low delay no loss', 'high delay no loss', 'low delay high loss', 'high delay high loss']
+x_labels = ['low delay zero loss', 'high delay zero loss', 'low delay low loss', 'high delay low loss']
 
 create_scatterplot(df, 'Buffer Length', 'Download Rate', 'Bandwidth', 'Loss', 'Delay', 'Download Rate vs Buffer Length')
 create_scatterplot(df, 'Buffer Length', 'Avg Bandwith Utilization %', 'Bandwidth', 'Loss', 'Delay', 'Avg Bandwith Utilization % vs Buffer Length')
@@ -105,7 +104,7 @@ create_scatterplot(df, 'Buffer Length', 'Avg Dropped Frames', 'Bandwidth', 'Loss
 create_scatterplot(df, 'Download Rate', 'Avg Dropped Frames', 'Bandwidth', 'Loss', 'Delay', 'Avg Dropped Frames vs Download Rate')
 create_heatmap(df, x_labels, 'Dropped Frames')
 create_heatmap(df, x_labels, 'Dropped Frames %')
-create_scatterplot(df, 'Avg Resolution Changes', 'Avg Dropped Frames %', 'Bandwidth', 'Loss', 'Delay', 'Avg Dropped Frames % vs Avg Resolution Changes')
+create_scatterplot(df, 'Avg number of Resolution Changes', 'Avg Dropped Frames %', 'Bandwidth', 'Loss', 'Delay', 'Avg Dropped Frames % vs Avg number of Resolution Changes')
 create_scatterplot(df, 'Avg Rebuffering Events', 'Avg Dropped Frames %', 'Bandwidth', 'Loss', 'Delay', 'Avg Dropped Frames % vs Avg Rebuffering Events')
-create_scatterplot(df, 'Avg Rebuffering Events', 'Avg Resolution Changes', 'Bandwidth', 'Loss', 'Delay', 'Avg Resolution Changes vs Avg Rebuffering Events')
-create_heatmap(df, x_labels, 'Resolution Changes')
+create_scatterplot(df, 'Avg Rebuffering Events', 'Avg number of Resolution Changes', 'Bandwidth', 'Loss', 'Delay', 'Avg number of Resolution Changes vs Avg Rebuffering Events')
+create_heatmap(df, x_labels, 'number of Resolution Changes')

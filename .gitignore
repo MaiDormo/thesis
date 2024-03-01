@@ -98,3 +98,7 @@ x264_2pass.log.mbtree.temp
 
 #har
 *.har
+
+
+#images
+*.png
