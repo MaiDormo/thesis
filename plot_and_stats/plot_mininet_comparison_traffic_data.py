@@ -9,10 +9,10 @@ mpl.rcParams['font.size'] = 11
 PARAMETERS = {
     'resolution_order': ['320x180', '480x270', '640x360',  '768x432', '940x540', '1024x576', '1280x720', '1920x1080', '2560x1440', '3840x2160'],
     'bw': 5,
-    'delay': 100,
-    'loss': 2,
+    'delay': 20,
+    'loss': 0,
     'number_of_runs': 3,
-    'run': 2,
+    'run': 1,
     'include_traffic': True, 
 }
 
@@ -98,15 +98,21 @@ def main(params):
         lines = lines3 + lines4 + lines5 + lines6
         labels = [line.get_label() for line in lines]
         line_dict = {label: line for line, label in zip(lines, labels)}
+        unique_lines = list(line_dict.values())  # Update unique_lines for the second plot
+        unique_labels = list(line_dict.keys())  # Update unique_labels for the second plot
+
         ax2.legend(unique_lines, unique_labels, loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
         plt.subplots_adjust(bottom=0.15)  # Adjust the bottom padding
         plt.savefig(f'statistics/mininet/traffic_{params["bw"]}_{params["delay"]}_{params["loss"]}_rest.png', dpi=300)
-    
+        
     else:
          # Create a dictionary that maps labels to lines
         lines = lines3 + lines4
         labels = [line.get_label() for line in lines]
         line_dict = {label: line for line, label in zip(lines, labels)}
+        unique_lines = list(line_dict.values())  # Update unique_lines for the second plot
+        unique_labels = list(line_dict.keys())  # Update unique_labels for the second plot
+
         ax2.legend(unique_lines, unique_labels, loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
         plt.subplots_adjust(bottom=0.15)  # Adjust the bottom padding
         plt.savefig(f'statistics/mininet/mininet_{params["bw"]}_{params["delay"]}_{params["loss"]}_rest.png', dpi=300)
