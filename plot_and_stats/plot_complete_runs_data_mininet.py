@@ -71,7 +71,7 @@ def create_heatmap(df, x_labels, title):
     heatmap_data = pd.DataFrame(columns=x_labels, index=PARAMETERS['bandwidths'])
 
     for bw in PARAMETERS['bandwidths']:
-        for label, (delay, loss) in zip(x_labels, [(20, 0), (100, 0), (20, 2), (100, 2)]):
+        for label, (delay, loss) in zip(x_labels, [(20, 0), (20, 2), (100, 0), (100, 2)]):
             filtered_data = df[(df['Bandwidth'] == bw) & (df['Delay'] == delay) & (df['Loss'] == loss)]
             avg = filtered_data['Avg ' + title].mean()
             heatmap_data.loc[bw, label] = avg
@@ -96,7 +96,7 @@ df = run_statistics_for_combinations(PARAMETERS)
 # Sort the DataFrame
 df = df.sort_values(by=['Avg Dropped Frames', 'Download Rate', 'Buffer Length'])
 
-x_labels = ['low delay zero loss', 'high delay zero loss', 'low delay low loss', 'high delay low loss']
+x_labels = ['low delay zero loss', 'low delay low loss', 'high delay zero loss',  'high delay low loss']
 
 create_scatterplot(df, 'Buffer Length', 'Download Rate', 'Bandwidth', 'Loss', 'Delay', 'Download Rate vs Buffer Length')
 create_scatterplot(df, 'Buffer Length', 'Avg Bandwith Utilization %', 'Bandwidth', 'Loss', 'Delay', 'Avg Bandwith Utilization % vs Buffer Length')
