@@ -52,8 +52,8 @@ def process_and_plot_data(params, data_type, data_used, y_label=None, exclude_co
 
 def main(params):
     fig, ax = plt.subplots(figsize=(12,7))
-    lines1 = process_and_plot_data(params, 'aws', 'data', exclude_columns=['Effective Bitrate'], ax=ax, linestyle='-', save=False)
-    lines2 = process_and_plot_data(params, 'uni', 'data', exclude_columns=['Effective Bitrate'], ax=ax, is_traffic=True, linestyle='--', save=False)
+    process_and_plot_data(params, 'aws', 'data', exclude_columns=['Effective Bitrate'], ax=ax, linestyle='-', save=False)
+    process_and_plot_data(params, 'uni', 'data', exclude_columns=['Effective Bitrate'], ax=ax, is_traffic=True, linestyle='--', save=False)
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.035), fancybox=True, shadow=True, ncol=5)
     plt.subplots_adjust(bottom=0.15)  # Adjust the top padding
     plt.savefig(f'statistics/data_comparison_{params["run"]}.png', dpi=300)
@@ -61,18 +61,18 @@ def main(params):
     fig, ax1 = plt.subplots(figsize=(12, 6))
 
     # Plot resolution data
-    lines3 = process_and_plot_data(params, 'aws', 'resolutionData', y_label=params['resolution_order'], ax=ax1, cmap='cool', linestyle='-', save=False)
-    lines4 = process_and_plot_data(params, 'uni', 'resolutionData', y_label=params['resolution_order'], ax=ax1, is_traffic=True, cmap='coolwarm', linestyle='--', save=False)
+    line_aws_resolutionData = process_and_plot_data(params, 'aws', 'resolutionData', y_label=params['resolution_order'], ax=ax1, cmap='cool', linestyle='-', save=False)
+    line_uni_resolutionData = process_and_plot_data(params, 'uni', 'resolutionData', y_label=params['resolution_order'], ax=ax1, is_traffic=True, cmap='coolwarm', linestyle='--', save=False)
 
     # Create a second y-axis that shares the same x-axis
     ax2 = ax1.twinx()
 
     # Plot dropped frames data with a different colormap
-    lines5 = process_and_plot_data(params, 'aws', 'droppedFrames', ax=ax2, cmap='spring', linestyle='-.', save=False)
-    lines6 = process_and_plot_data(params, 'uni', 'droppedFrames', ax=ax2, is_traffic=True, cmap='summer', linestyle=':', save=False)
+    line_aws_droppedFrames = process_and_plot_data(params, 'aws', 'droppedFrames', ax=ax2, cmap='spring', linestyle='-.', save=False)
+    lines_uni_droppedFrames = process_and_plot_data(params, 'uni', 'droppedFrames', ax=ax2, is_traffic=True, cmap='summer', linestyle=':', save=False)
 
     # Create a dictionary that maps labels to lines
-    lines = lines3 + lines4 + lines5 + lines6
+    lines = line_aws_resolutionData + line_uni_resolutionData + line_aws_droppedFrames + lines_uni_droppedFrames
     labels = [line.get_label() for line in lines]
     line_dict = {label: line for line, label in zip(lines, labels)}
 

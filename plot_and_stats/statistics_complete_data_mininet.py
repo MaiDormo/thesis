@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from termcolor import colored
 
-DEBUG = 0
+DEBUG = 1
 RUN_MAIN = True
 
 resolution_order = ['320x180', '480x270', '640x360',  '768x432', '940x540', '1024x576', '1280x720', '1920x1080', '2560x1440', '3840x2160']

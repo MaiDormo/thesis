@@ -6,7 +6,7 @@ from progress.bar import Bar
 from datetime import datetime, timedelta
 from termcolor import colored
 
-DEBUG = 0
+DEBUG = 1
 NUMBER_OF_RUNS = 3
 RUN_MAIN = True
 
